@@ -1,38 +1,40 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include <math.h>
 
 #include "EntityManager.h"
 
+// Initial amount of entities you can make
 Entity *entities = new Entity[100];
-std::vector<unsigned> availableEntities;
+// If entity gets destroyed, add its id to be available for creating new entity
+std::vector<unsigned> availableId;
+// How many entities you actually have
 unsigned count = 0;
-unsigned nextId = 0;
 
 void create()
 {
     unsigned id;
 
-    if (!availableEntities.empty())
+    if (!availableId.empty())
     {
-        id = availableEntities.back();
-        availableEntities.pop_back();
+        id = availableId.back();
+        availableId.pop_back();
+        entities[id].alive = true;
     }
     else
     {
-        id = nextId;
-        nextId++;
+        id = count;
+        Entity entity(id);
+        entities[id] = entity;
+        count++;
     }
-
-    Entity entity(id);
-    entities[id] = entity;
-    count++;
 }
 
 void remove(Entity entity)
 {
     unsigned id = entity.id;
-    availableEntities.push_back(id);
+    availableId.push_back(id);
 
     entities[id].alive = false;
     count--;
@@ -41,4 +43,9 @@ void remove(Entity entity)
 Entity get(unsigned id)
 {
     return entities[id];
+}
+
+void changeComponentBits(unsigned id)
+{
+    entities[id].componentBits = entities[id].componentBits ^ (unsigned)pow(2, 0);
 }
